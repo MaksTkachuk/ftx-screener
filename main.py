@@ -5,6 +5,7 @@ from datetime import timedelta as td
 import sys
 
 future_code = '1231'
+number_of_results = 30
 
 def get_markets():
     columns = ['name', 'type', 'currency', 'last']
@@ -34,11 +35,11 @@ if __name__ == '__main__':
         print('Please provide exactly 1 argument')
     elif sys.argv[1] == 'funding':
         df = get_funding_rates()
-        print(df.sort_values(by='rate', key=abs, ascending=[False]).head(10))
+        print(df.sort_values(by='rate', key=abs, ascending=[False]).head(number_of_results))
     elif sys.argv[1] == 'diff': 
         df = get_markets()
         df = df.merge(df.loc[df['type'] == 'spot', ['currency', 'last']], how='left', on='currency', suffixes=(None, '_spot_price'))
         df['diff'] = df['last']/df['last_spot_price'] - 1
-        print(df.sort_values(by='diff', key=abs, ascending=[False]).head(10))
+        print(df.sort_values(by='diff', key=abs, ascending=[False]).head(number_of_results))
     else:
         print('Argument not recognized')
