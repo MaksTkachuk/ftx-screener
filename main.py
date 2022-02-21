@@ -12,7 +12,7 @@ def get_markets():
     response = requests.get('https://ftx.com/api/markets')
     if response.ok:
         df = pandas.DataFrame(response.json()['result'])
-        df = df.loc[df['quoteCurrency'].isin(['USD', None]) & ~df['name'].str.contains('MOVE')]
+        df = df.loc[df['quoteCurrency'].isin(['USD', None]) & ~df['name'].str.contains('MOVE')] 
         df['currency'] = df[['underlying', 'baseCurrency']].apply(lambda x: x[0] if x[0] else x[1], axis=1)
         return df[columns]
     else: 
@@ -40,6 +40,7 @@ if __name__ == '__main__':
         df = get_markets()
         df = df.merge(df.loc[df['type'] == 'spot', ['currency', 'last']], how='left', on='currency', suffixes=(None, '_spot_price'))
         df['diff'] = df['last']/df['last_spot_price'] - 1
+        df = df.loc[df['name'].str.contains(future_code)] 
         print(df.sort_values(by='diff', key=abs, ascending=[False]).head(number_of_results))
     else:
         print('Argument not recognized')
